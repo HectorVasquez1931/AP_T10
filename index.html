@@ -17,13 +17,26 @@
 
             <form action="" id="login-form">
                 <label for="username">Usuario</label>
-                <input type="text" name="username" id="username" placeholder="emilys">
+                <input type="text" name="username" id="username" placeholder="emilys" autocomplete="username">
 
-                <label for="password">Contrasenia</label>
-                <input type="password" name="password" id="password">
-                <p id="login-error" hidden></p>
+                <label for="current-password">Contrasenia</label>
+                <input type="password" name="current-password" id="current-password" autocomplete="current-password">
+                <p id="login-error" hidden>ERRIOR</p>
                 <button id="login-btn" type="submit">Entrar</button>
             </form>
+
+        </section>
+
+        <section id="dashboard">
+            <img src="" alt="">
+            <p id="nombre"></p>
+            <p id="correo"></p>
+
+
+
+
+
+
 
         </section>
     </main>
