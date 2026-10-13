@@ -5,10 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLER 10</title>
+    <link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
+    <main>
+        <section id="login">
+            <h1>Inicio de sesion</h1>
+            <p>Inicia sesion con DummyJSON</p>
 
+            <form action="" id="login-form">
+                <label for="username">Usuario</label>
+                <input type="text" name="username" id="username" placeholder="emilys">
+
+                <label for="password">Contrasenia</label>
+                <input type="password" name="password" id="password">
+                <p id="login-error" hidden></p>
+                <button id="login-btn" type="submit">Entrar</button>
+            </form>
+
+        </section>
+    </main>
+
+
+    <script src="app.js"></script>
 </body>
 
 </html>

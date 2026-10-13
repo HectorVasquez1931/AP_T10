@@ -1,0 +1,47 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: calibri;
+    background: lightblue;
+}
+
+main {
+    padding: 1rem;
+}
+
+#login {
+    background-color: lightcoral;
+    border-radius: 10px;
+    padding: 1rem;
+    align-items: center;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    height: 44px;
+    font: inherit;
+    font-size: 1rem;
+    border: 1px solid #c97070;
+    border-radius: 8px;
+}
+
+button {
+    height: 44px;
+    margin-top: 1rem;
+    font-weight: bold;
+    border: 1px solid #c97070;
+    border-radius: 8px;
+    background: #2349b3;
+    color: #fff;
+}
