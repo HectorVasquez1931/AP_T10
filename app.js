@@ -15,6 +15,17 @@ const edad = document.getElementById("edad");
 const telefono = document.getElementById("telefono");
 const ciudad = document.getElementById("ciudad");
 
+const contador_total = document.getElementById("contador-total");
+const contador_completadas = document.getElementById("contador-completadas");
+const contador_pendientes = document.getElementById("contador-pendientes");
+const contador_porcentaje = document.getElementById("contador-porcentaje");
+const select_filtro = document.getElementById("filtro");
+const buscador = document.getElementById("buscador");
+const lista = document.getElementById("lista");
+let tareas = [];
+
+
+
 function mostrarLogin() {
     seccion_login.hidden = false;
     seccion_dashboard.hidden = true;
@@ -95,11 +106,80 @@ async function cargarUsuario() {
         console.log(usuario);
         pintarPerfil(usuario);
         mostrarDashboard();
+        await cargarTareas(usuario.id);
 
 
     } catch (error) {
         mostrarLogin();
     }
+}
+
+async function cargarTareas(id) {
+    try {
+        const res = await fetch(`https://dummyjson.com/todos/user/${id}`);
+        if (!res.ok) throw new Error("Error " + res.status);
+
+        const data = await res.json();
+        tareas = data.todos;
+        pintarTareas();
+    } catch (err) {
+        console.error(err);
+        lista.innerHTML = "<li>No se pudieron cargar las tareas.</li>";
+    }
+}
+
+
+function pintarTareas() {
+    const total = tareas.length;
+
+    const completadas = tareas.reduce((cuenta, tarea) => {
+        if (tarea.completed) {
+            return cuenta + 1;
+        }
+        return cuenta;
+    }, 0);
+
+    const pendientes = total - completadas;
+
+    let porcentaje = 0;
+
+    if (total > 0) {
+        porcentaje = completadas / total * 100;
+    }
+
+    contador_total.textContent = total;
+
+    contador_completadas.textContent = completadas;
+    contador_pendientes.textContent = pendientes;
+
+    contador_porcentaje.textContent = porcentaje + "%";
+
+    const tipo = select_filtro.value;
+    const texto = buscador.value.trim().toLowerCase();
+
+    const visibles = tareas.filter((tarea) => {
+        if (tipo === "pendientes") {
+            return !tarea.completed;
+        }
+        if (tipo === "completadas") {
+            return tarea.completed;
+        }
+
+        return true;
+    }).filter((tarea) => {                            
+        return tarea.todo.toLowerCase().includes(texto);
+    });
+
+    const items = visibles.map((tarea) => {
+        const li = document.createElement("li");
+        li.textContent = tarea.todo;
+        if (tarea.completed) {
+            li.classList.add("completada");
+        }
+        return li;
+    });
+
+    lista.replaceChildren(...items);
 }
 
 function pintarPerfil(usuario) {
@@ -121,10 +201,15 @@ function cerrarSesion() {
 
 formulario.addEventListener("submit", login);
 boton_cerrar.addEventListener("click", cerrarSesion);
-
+select_filtro.addEventListener("change", pintarTareas);
+buscador.addEventListener("input", pintarTareas);
 
 if (localStorage.getItem("accessToken")) {
     cargarUsuario();
 } else {
     mostrarLogin();
 }
+
+// fetch('https://dummyjson.com/todos/1')
+// .then(res => res.json())
+// .then(console.log);

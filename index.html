@@ -35,6 +35,27 @@
             <p id="ciudad"></p>
 
             <button id="cerrar-sesion" type="button">Cerrar sesión</button>
+
+            <div id="tareas">
+                <h2>Tareas</h2>
+
+                <div id="contadores">
+                    <p>Total: <span id="contador-total">0</span></p>
+                    <p>Completadas: <span id="contador-completadas">0</span></p>
+                    <p>Pendientes: <span id="contador-pendientes">0</span></p>
+                    <p>Avance: <span id="contador-porcentaje">0%</span></p>
+                </div>
+
+                <select id="filtro">
+                    <option value="todas">Todas</option>
+                    <option value="pendientes">Pendientes</option>
+                    <option value="completadas">Completadas</option>
+                </select>
+
+                <input type="search" id="buscador" placeholder="Buscar tarea…">
+
+                <ul id="lista"></ul>
+            </div>
         </section>
     </main>
 
