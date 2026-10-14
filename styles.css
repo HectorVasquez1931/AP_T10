@@ -45,3 +45,38 @@ button {
     background: #2349b3;
     color: #fff;
 }
+
+/* Que "hidden" gane aunque la sección tenga display: flex */
+[hidden] {
+    display: none !important;
+}
+
+#dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: lightcoral;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+}
+
+#dashboard img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+#dashboard p {
+    margin: 0.25rem 0;
+}
+
+#nombre {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+#cerrar-sesion {
+    padding: 0 1.5rem;
+}
