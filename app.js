@@ -25,6 +25,9 @@ const lista = document.getElementById("lista");
 let tareas = [];
 
 
+const form_agregar = document.getElementById("form-agregar");
+const input_nueva = document.getElementById("nueva-tarea");
+let usuario_id = 0;
 
 function mostrarLogin() {
     seccion_login.hidden = false;
@@ -41,7 +44,6 @@ async function login(e) {
     const user = document.getElementById("username").value;
     const pass = document.getElementById("current-password").value;
 
-    //cargando
     boton.textContent = "CARGANDO";
     boton.disabled = true;
 
@@ -53,9 +55,9 @@ async function login(e) {
             body: JSON.stringify({
                 username: user,
                 password: pass,
-                expiresInMins: 30, // optional, defaults to 60
+                expiresInMins: 30, 
             }),
-            credentials: 'include' // Include cookies (e.g., accessToken) in the request
+            credentials: 'include'
         })
         const data = await res.json();
 
@@ -74,27 +76,15 @@ async function login(e) {
 }
 
 
-// /* providing accessToken in bearer */
-// fetch('https://dummyjson.com/auth/me', {
-//   method: 'GET',
-//   headers: {
-//     'Authorization': 'Bearer /* YOUR_ACCESS_TOKEN_HERE */', // Pass JWT via Authorization header
-//   }, 
-//   credentials: 'include' // Include cookies (e.g., accessToken) in the request
-// })
-// .then(res => res.json())
-// .then(console.log);
-
-
 async function cargarUsuario() {
     const token = localStorage.getItem("accessToken");
     try {
         const res = await fetch('https://dummyjson.com/auth/me', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`, // Pass JWT via Authorization header
+                'Authorization': `Bearer ${token}`, 
             },
-            credentials: 'include' // Include cookies (e.g., accessToken) in the request
+            credentials: 'include'
         })
         if (res.status == 401) {
             cerrarSesion();
@@ -107,7 +97,7 @@ async function cargarUsuario() {
         pintarPerfil(usuario);
         mostrarDashboard();
         await cargarTareas(usuario.id);
-
+        usuario_id = usuario.id;
 
     } catch (error) {
         mostrarLogin();
@@ -166,13 +156,27 @@ function pintarTareas() {
         }
 
         return true;
-    }).filter((tarea) => {                            
+    }).filter((tarea) => {
         return tarea.todo.toLowerCase().includes(texto);
     });
 
     const items = visibles.map((tarea) => {
         const li = document.createElement("li");
-        li.textContent = tarea.todo;
+
+        const casilla = document.createElement("input");
+        casilla.type = "checkbox";
+        casilla.checked = tarea.completed;
+        casilla.addEventListener("change", () => marcarTarea(tarea.id));
+
+        const span = document.createElement("span");
+        span.textContent = tarea.todo;
+
+        const boton_eliminar = document.createElement("button");
+        boton_eliminar.type = "button";
+        boton_eliminar.textContent = "Eliminar";
+        boton_eliminar.addEventListener("click", () => eliminarTarea(tarea.id));
+
+        li.append(casilla, span, boton_eliminar);
         if (tarea.completed) {
             li.classList.add("completada");
         }
@@ -180,6 +184,49 @@ function pintarTareas() {
     });
 
     lista.replaceChildren(...items);
+}
+
+async function marcarTarea(id) {
+
+    const tarea = tareas.find((t) => t.id === id);
+    const nuevo_estado = !tarea.completed;
+
+    try {
+
+        if (!tarea.local) {
+            const res = await fetch(`https://dummyjson.com/todos/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ completed: nuevo_estado }),
+            });
+            if (!res.ok) throw new Error("Error " + res.status);
+        }
+
+        tarea.completed = nuevo_estado;
+    } catch (err) {
+        console.error(err);
+    }
+
+    pintarTareas();
+}
+
+async function eliminarTarea(id) {
+    const tarea = tareas.find((t) => t.id === id);
+
+    try {
+        if (!tarea.local) {
+            const res = await fetch(`https://dummyjson.com/todos/${id}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error("Error " + res.status);
+        }
+
+        tareas = tareas.filter((t) => t.id !== id);
+    } catch (err) {
+        console.error(err);
+    }
+
+    pintarTareas();
 }
 
 function pintarPerfil(usuario) {
@@ -190,6 +237,37 @@ function pintarPerfil(usuario) {
     edad.textContent = `Edad: ${usuario.age}`;
     telefono.textContent = `Teléfono: ${usuario.phone}`;
     ciudad.textContent = `Ciudad: ${usuario.address.city}`;
+}
+
+async function agregarTarea(e) {
+    e.preventDefault();
+
+    const texto_nuevo = input_nueva.value.trim();
+    if (texto_nuevo === "") return;  
+
+    try {
+        const res = await fetch("https://dummyjson.com/todos/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                todo: texto_nuevo,
+                completed: false,
+                userId: usuario_id,
+            }),
+        });
+
+        if (!res.ok) throw new Error("Error " + res.status);
+
+        const nueva = await res.json();
+
+        nueva.local = true;
+
+        tareas.push(nueva);
+        input_nueva.value = "";
+        pintarTareas();
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 function cerrarSesion() {
@@ -203,6 +281,7 @@ formulario.addEventListener("submit", login);
 boton_cerrar.addEventListener("click", cerrarSesion);
 select_filtro.addEventListener("change", pintarTareas);
 buscador.addEventListener("input", pintarTareas);
+form_agregar.addEventListener("submit", agregarTarea);
 
 if (localStorage.getItem("accessToken")) {
     cargarUsuario();
@@ -210,6 +289,4 @@ if (localStorage.getItem("accessToken")) {
     mostrarLogin();
 }
 
-// fetch('https://dummyjson.com/todos/1')
-// .then(res => res.json())
-// .then(console.log);
+

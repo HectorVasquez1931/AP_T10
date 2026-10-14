@@ -133,3 +133,31 @@ button {
         flex: 1 1 0;
     }
 }
+
+#lista li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#lista span {
+    flex: 1; 
+}
+
+#lista input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+#lista button {
+    height: auto;
+    margin-top: 0;
+    padding: 0.4rem 0.75rem;
+    background: #b91c1c;
+}
+
+/* Tachar solo el texto, no el botón */
+.completada span {
+    text-decoration: line-through;
+    color: gray;
+}
